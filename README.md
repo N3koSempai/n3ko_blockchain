@@ -1,6 +1,6 @@
 # Welcome to n3ko blockchain.
 
-
+[![CodeFactor](https://www.codefactor.io/repository/github/n3kosempai/n3ko_blockchain/badge/master)](https://www.codefactor.io/repository/github/n3kosempai/n3ko_blockchain/overview/master)
 
 I started this blockchain as an exercise for my blockchain development skills.
 
