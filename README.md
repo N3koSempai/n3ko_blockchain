@@ -8,6 +8,12 @@ I started this blockchain as an exercise for my blockchain development skills.
 
 
 
+---
+
+###### warning!
+
+Do not execute the main file. The classes are created but not yet instantiated so they will not do (I will change the architecture to a node-client model).
+
 | features                        | implemented?   |
 | ------------------------------- |:--------------:|
 | basic structure of a blockchain | yes/~          |
@@ -16,5 +22,3 @@ I started this blockchain as an exercise for my blockchain development skills.
 | secure mining algoritm          | no             |
 | wallet client                   | no             |
 | smart contract support          | no             |
-
-
