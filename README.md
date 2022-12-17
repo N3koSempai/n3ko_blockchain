@@ -6,8 +6,6 @@ I started this blockchain as an exercise for my blockchain development skills.
 
 ! Although I do not rule out creating something advanced it is not the goal of this blockchain to go into production !
 
-
-
 ---
 
 ###### warning!
