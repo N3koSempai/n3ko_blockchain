@@ -10,7 +10,9 @@ I started this blockchain as an exercise for my blockchain development skills.
 
 ###### warning!
 
-Do not execute the main file. The classes are created but not yet instantiated so they will not do (I will change the architecture to a node-client model).
+the blockchain is no descentralized yet..
+
+for test the network need to change the ip and port for flask and after run. Use the two endpoint available for mining and get the chain
 
 | features                        | implemented?   |
 | ------------------------------- |:--------------:|
@@ -20,3 +22,19 @@ Do not execute the main file. The classes are created but not yet instantiated s
 | secure mining algoritm          | no             |
 | wallet client                   | no             |
 | smart contract support          | no             |
+
+###### endpoints:
+
+```url
+http://$IP:$PORT/get_chain
+```
+
+this endpoint return the blockchain
+
+
+
+```url
+http://$IP:$PORT/mine_block
+```
+
+this endpoint mine a new block
