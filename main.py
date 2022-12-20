@@ -62,13 +62,14 @@ class Blockchain:
         while block_index < len(chain):
             block = chain[block_index]
             if block["previous_hash"] != self.hash(previous_block):
-                print('first')
+
                 return False
             previous_proof = previous_block['proof']
+            #this part have a error. need better algorithm
             proof = block['proof']
-            new_proof = 1
+            new_proof = block['proof']
             hash_operation = hashlib.sha256(str(new_proof**2 - previous_proof**2).encode()).hexdigest()
-            print(hash_operation[:4])
+            
             if hash_operation[:4] != '0000':
                 return False
                 
@@ -119,7 +120,10 @@ def is_valid():
     if is_valid:
         response = {"message": "all ok"}
     else:
-        response = {"message": "!the blockchain is not valid!"}
+        
+        response = {"message": "!the blockchain is not valid!",
+                    "debug_info": is_valid}
+    
     return response
 
 
