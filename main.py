@@ -1,8 +1,19 @@
+
+
+# create by Alvaro @nekosempai
+
+
 import hashlib
 import datetime
 import json
 
 from flask import Flask, jsonify
+
+
+
+import requests
+from uuid import uuid4
+from urllib.parse import urlparse
 
 # create a main class
 
@@ -11,22 +22,38 @@ class Blockchain:
     def __init__(self):
         #ledger of chain
         self.chain = []
-        
+        #block for transaction detail
+        self.transaction = []
         #call function for create new block in the start (genesis)
         self.create_block(proof=1,previous_hash="0")
-        
-        
+        #
+        self.node = set()
+    
+    
+    def add_node(self, address):
+        parsed_url = urlparse(address)
+        self.node.add(parsed_url.netloc)
+    
     def create_block(self, proof, previous_hash):
         """this function create new block usig hash to the before block and make timestamp"""
         
         block = {'index':len(self.chain)+1,
         'timestamp': str(datetime.datetime.now()),
          "proof": proof,
-         "previous_hash": previous_hash}
-        
+         "previous_hash": previous_hash,
+         'transaction': self.transaction}
+        self.transaction = []
         #added to chain and return actual block
         self.chain.append(block)
         return block
+    
+    def add_transaction(self, sender, receiver, amount)
+        """create the transaction block"""
+        self.transaction.append({'sender': sender,'receiver': receiver,
+                                'amount': amount })
+        previous_block = self.get_previous_block()
+        return previous_block'index'] +1 
+        
     
     def get_previous_block(self):
         """get the last block"""
@@ -51,12 +78,13 @@ class Blockchain:
         return new_proof   
 
     def hash(self, block):
+        """create a hash of the block"""
         encoded_block = json.dumps(block, sort_keys = True).encode()
         result = hashlib.sha256(encoded_block).hexdigest()
         return result
 
     def is_chain_valid(self, chain):
-
+        """test if all the chain is valid 'experimental'"""
         previous_block = chain[0]
         block_index = 1
         while block_index < len(chain):
@@ -84,7 +112,6 @@ blockchain = Blockchain()
 
 # endpoint for mining a new block
 @app.route("/mine_block", methods=['GET'])
-
 def mine_block():
     
     previous_block = blockchain.get_previous_block()
