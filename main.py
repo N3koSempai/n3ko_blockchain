@@ -7,7 +7,7 @@ import hashlib
 import datetime
 import json
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 
 
@@ -34,6 +34,28 @@ class Blockchain:
         parsed_url = urlparse(address)
         self.node.add(parsed_url.netloc)
     
+    def replace_chain(self):
+        network = self.node
+        longest_chain = None
+        max_length = len(self.chain)
+        #scanning node in network
+        for node in network:
+            response = requests.get(f'http://{node}/get_chain')
+            if response.status_code == 200:
+                length = response.json()
+                print(length)
+                length = length['length']
+                chain = response.json()
+                chain = chain['chain']
+                
+                if length > max_length and self.is_chain_valid(chain):
+                    max_length = length
+                    longest_chain = chain
+            if longest_chain:
+                self.chain = longest_chain
+                return True
+            return False
+                
     def create_block(self, proof, previous_hash):
         """this function create new block usig hash to the before block and make timestamp"""
         
@@ -47,12 +69,12 @@ class Blockchain:
         self.chain.append(block)
         return block
     
-    def add_transaction(self, sender, receiver, amount)
+    def add_transaction(self, sender, receiver, amount):
         """create the transaction block"""
         self.transaction.append({'sender': sender,'receiver': receiver,
                                 'amount': amount })
         previous_block = self.get_previous_block()
-        return previous_block'index'] +1 
+        return previous_block['index'] +1 
         
     
     def get_previous_block(self):
@@ -135,7 +157,7 @@ def mine_block():
 @app.route("/get_chain", methods=['GET'])
 def get_chain():
     response = {"chain" :blockchain.chain,
-    "lenght": len(blockchain.chain)}
+    "length": len(blockchain.chain)}
     return jsonify(response), 200
 
 
@@ -146,14 +168,56 @@ def is_valid():
     is_valid = blockchain.is_chain_valid(blockchain.chain)
     if is_valid:
         response = {"message": "all ok"}
+        return jsonify(response), 200
     else:
         
         response = {"message": "!the blockchain is not valid!",
                     "debug_info": is_valid}
     
-    return response
+        return jsonify(response), 404
+
+#
+@app.route("/add_trans", methods=['POST'])
+def add_transaction():
+    json = request.get_json()
+    transaction_keys = ['sender', 'receiver', 'amount']
+    if not all (key in json for key in transaction_keys):
+        return "error some element are not in the array", 400
+    index = blockchain.add_transaction(json['sender'], json['receiver'],json['amount'])
+    response = {'message': f'the transaction was added to the block {index}'}
+    return jsonify(response), 201
+    
+    
+#connecting new nodes
+@app.route("/connect_node", methods=['POST'])
+def connect_node():
+    print(1)
+    print(request.get_json())
+    json = request.get_json()
+    print(json)
+    print('ok')
+    nodes = json.get('nodes')
+    print('get_node')
+    if nodes is None:
+        return "no node", 401
+    for node in nodes:
+        blockchain.add_node(node)
+    response = {'message': 'All nodes are connected. N3ko Blockchain have this nodes', 'total_nodes': list(blockchain.node)}
+    return jsonify(response), 201
 
 
-
-
-app.run(host= '0.0.0.0', port='5000')
+# remplacing the chain for the most large
+@app.route("/replace_chain", methods=['GET'])
+def replace_chain():
+    is_chain_replace = blockchain.replace_chain()
+    if is_chain_replace:
+        response = {"message": "the chain are replacing with the most large", "new_chain": blockchain.chain}
+        return jsonify(response), 200
+    else:
+        
+        response = {"message": "this chain is already the most large",
+                    "actual_chain": blockchain.chain}
+    
+        return jsonify(response), 200
+    
+app.run(host= '0.0.0.0', port='5001 ')
